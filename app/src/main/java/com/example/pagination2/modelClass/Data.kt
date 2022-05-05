@@ -10,7 +10,7 @@ class Data : ArrayList<Data.DataItem>(){
         val gists_url: String,
         val gravatar_id: String,
         val html_url: String,
-        val id: String,
+        val id: Int,
         val login: String,
         val node_id: String,
         val organizations_url: String,

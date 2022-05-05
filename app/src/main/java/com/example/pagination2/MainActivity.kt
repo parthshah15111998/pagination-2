@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var myAdapter: MyAdapter
     lateinit var userList: ArrayList<Data.DataItem>
-    var pageNum=1
+    var since=0
     private lateinit var linearLayoutManager: LinearLayoutManager
     private var isLoading = false
 
@@ -39,15 +39,14 @@ class MainActivity : AppCompatActivity() {
         myAdapter = MyAdapter(baseContext, userList)
         binding.recyclerView.adapter = myAdapter
 
-        getData(pageNum)
+        getData(since)
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
                 if (!isLoading) {
                     if (linearLayoutManager.findLastCompletelyVisibleItemPosition() == userList.size - 1) {
-                        pageNum++
-                        getData(pageNum)
+                        getData(since)
                     }
                 }
 
@@ -56,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getData( page:Int) {
+    private fun getData(since:Int) {
         val logger = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         val okHttpClient: OkHttpClient.Builder = OkHttpClient.Builder().addInterceptor(logger)
         isLoading = true
@@ -68,7 +67,7 @@ class MainActivity : AppCompatActivity() {
             .build()
             .create(ApiInterface::class.java)
 
-        val retrofitData = retrofitBuilder.getData(page,5)
+        val retrofitData = retrofitBuilder.getData(since,5)
 
         retrofitData.enqueue(object : Callback<ArrayList<Data.DataItem>?> {
             @SuppressLint("NotifyDataSetChanged")
@@ -78,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 val responseBody = response.body()!!
                 userList.addAll(responseBody)
+                this@MainActivity.since = userList[userList.size-1].id
                 binding.loading.postDelayed(Runnable {
                     myAdapter.notifyDataSetChanged()
                     isLoading = false

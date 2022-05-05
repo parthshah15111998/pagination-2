@@ -10,7 +10,7 @@ interface ApiInterface {
     //    @GET("users?page=1&per_page=5")
     @GET("users")
     fun getData(
-        @Query("page") page: Int,
-        @Query("per_page") par_page: Int): Call<ArrayList<Data.DataItem>>
+        @Query("since")since:Int,
+        @Query("per_page")per_page:Int): Call<ArrayList<Data.DataItem>>
 
 }
